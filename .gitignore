@@ -1,0 +1,5 @@
+.env
+*.env
+secrets/
+__pycache__/
+phase0-result.json
