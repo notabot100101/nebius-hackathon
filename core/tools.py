@@ -126,10 +126,15 @@ def _tool_list_dir(path: str = ".") -> ToolResult:
 
 def _tool_run_command(command: str) -> ToolResult:
     # Safety gate: reject known dangerous patterns
-    dangerous = ["rm -rf /", ":(){ :|:& };:"]
+    dangerous = ["rm -rf /", ":(){ :|:& };:", "> /dev/sda", "mkfs.", "dd if=/dev/zero"]
     for bad in dangerous:
-        if bad in command:
-            return ToolResult(success=False, error=f"Command rejected for safety: {bad}")
+        if bad in command.lower():
+            return ToolResult(success=False, error=f"Command rejected for safety: contains '{bad}'")
+    
+    # Reject sudo escalation
+    if command.strip().startswith("sudo "):
+        return ToolResult(success=False, error="Command rejected: sudo not allowed")
+    
     try:
         result = subprocess.run(
             shlex.split(command),

@@ -12,6 +12,7 @@ from typing import List, Dict, Any, Optional
 from core.config import config
 from core.memory import Memory
 from core.tools import ToolExecutor, ToolResult
+from core.registry import get_registry
 
 
 SYSTEM_PROMPT = """You are a Proof-First Personal Agent. Every claim you make must be backed by evidence.
@@ -122,7 +123,7 @@ class AgentTurnResult:
 
 
 class Agent:
-    """One-turn agent: user message → model → (optional) tools → model → result."""
+    """Multi-turn agent: maintains conversation history across turns."""
 
     def __init__(
         self,
@@ -131,6 +132,7 @@ class Agent:
         base_url: str = None,
         memory_dir: str = None,
         timeout: int = 60,
+        skills_dir: str = None,
     ):
         cfg = config
         self.client = NebiusClient(
@@ -141,17 +143,34 @@ class Agent:
         )
         self.memory = Memory(memory_dir or cfg["memory_dir"])
         self.tools = ToolExecutor(memory=self.memory)
+        self.history: List[Dict[str, Any]] = []
+        self.turn_count = 0
+
+        # Auto-discover skills from skills/ directory
+        self.registry = get_registry(executor=self.tools, skills_dir=skills_dir)
+        loaded = self.registry.discover()
+        builtin = {"read_file", "write_file", "list_dir", "run_command", "memory_read", "memory_write"}
+        skill_tools = [t for t in loaded if t not in builtin]
+        if skill_tools:
+            print(f"[Agent] Loaded skills: {', '.join(skill_tools)}")
+
+    def reset_history(self):
+        """Clear conversation history."""
+        self.history = []
+        self.turn_count = 0
 
     def run_turn(self, user_input: str, extra_system: str = None) -> AgentTurnResult:
-        """Run one complete agent turn."""
+        """Run one complete agent turn with persistent history."""
+        self.turn_count += 1
+
+        # Build messages: system + history + current user input
         system = SYSTEM_PROMPT
         if extra_system:
             system += "\n" + extra_system
 
-        messages: List[Dict[str, Any]] = [
-            {"role": "system", "content": system},
-            {"role": "user", "content": user_input},
-        ]
+        messages: List[Dict[str, Any]] = [{"role": "system", "content": system}]
+        messages.extend(self.history)
+        messages.append({"role": "user", "content": user_input})
 
         # Initial model call
         response1 = self.client.chat(
@@ -198,8 +217,15 @@ class Agent:
                 max_tokens=512,
             )
             final_text = self.client.extract_content(response2)
+            # Append final assistant message to messages for history
+            messages.append({"role": "assistant", "content": final_text})
         else:
             final_text = msg1.get("content") or "(no content)"
+            # Append assistant message to messages for history
+            messages.append({"role": "assistant", "content": final_text})
+
+        # Update persistent history (exclude system message)
+        self.history = messages[1:]
 
         return AgentTurnResult(
             user_input=user_input,
