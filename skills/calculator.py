@@ -37,10 +37,12 @@ _SAFE_NAMES = {
 
 def _safe_eval(node):
     """Safely evaluate an AST node."""
-    if isinstance(node, ast.Num):  # Python < 3.8
+    if isinstance(node, ast.Constant):  # Python 3.8+
+        if isinstance(node.value, (int, float)):
+            return node.value
+        raise ValueError(f"Only numeric constants allowed, got {type(node.value).__name__}")
+    elif hasattr(ast, 'Num') and isinstance(node, ast.Num):  # Python < 3.8 fallback
         return node.n
-    elif isinstance(node, ast.Constant):  # Python 3.8+
-        return node.value
     elif isinstance(node, ast.BinOp):
         op_type = type(node.op)
         if op_type not in _SAFE_OPS:
