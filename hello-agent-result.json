@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-09-26T08:02:36Z",
+  "user_input": "List the files in scripts/ and count how many there are",
+  "assistant_text": "\nThe `scripts/` directory contains the following files:\n\n1. `hello-agent.py`\n2. `hello_nemotron.py`\n\n**Total count:** 2 files.",
+  "tool_calls": [
+    {
+      "id": "chatcmpl-tool-9610ca49cab94de3",
+      "function": {
+        "arguments": "{\"path\": \"scripts/\"}",
+        "name": "list_dir"
+      },
+      "type": "function"
+    }
+  ],
+  "tool_results": [
+    {
+      "result": [
+        {
+          "name": "hello-agent.py",
+          "is_dir": false,
+          "size": 2089,
+          "modified": 1790117135.819213
+        },
+        {
+          "name": "hello_nemotron.py",
+          "is_dir": false,
+          "size": 4267,
+          "modified": 1789742429.9312415
+        }
+      ],
+      "proof": {
+        "claim": "list_dir succeeded for scripts/",
+        "evidence": {
+          "path": "scripts",
+          "count": 2
+        }
+      }
+    }
+  ],
+  "proof_log": [
+    {
+      "tool": "list_dir",
+      "success": true,
+      "claim": "list_dir succeeded for scripts/",
+      "evidence": {
+        "path": "scripts",
+        "count": 2
+      }
+    }
+  ]
+}
