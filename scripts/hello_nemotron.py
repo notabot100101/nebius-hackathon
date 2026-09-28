@@ -37,6 +37,27 @@ def call(path, key, payload=None):
         return e.code, {"error": e.read().decode(errors="replace")[:500]}
 
 
+def content_to_text(content):
+    """Normalize message.content from string or typed parts into plain text."""
+    if content is None:
+        return ""
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for part in content:
+            if isinstance(part, str):
+                parts.append(part)
+            elif isinstance(part, dict):
+                text = part.get("text") or part.get("content")
+                if isinstance(text, str):
+                    parts.append(text)
+                elif text is not None:
+                    parts.append(str(text))
+        return "".join(parts)
+    return str(content)
+
+
 def pick_nemotron(ids):
     nem = [i for i in ids if "nemotron" in i.lower()]
     for pref in ("nano", "super", "ultra"):          # cheapest capable first
@@ -63,9 +84,10 @@ def main():
         json.dump(res, open("phase0-result.json", "w"), indent=2)
         sys.exit("NO-GO: key rejected or no Nemotron model served (see phase0-result.json)")
 
-    st, out = call("/chat/completions", key, {"model": model, "max_tokens": 64, "messages": [
+    st, out = call("/chat/completions", key, {"model": model, "max_tokens": 256, "temperature": 0, "messages": [
         {"role": "user", "content": "Reply with exactly: NEMOTRON-OK"}]})
-    txt = (out.get("choices") or [{}])[0].get("message", {}).get("content", "") if st == 200 else ""
+    raw_content = (out.get("choices") or [{}])[0].get("message", {}).get("content", "") if st == 200 else ""
+    txt = content_to_text(raw_content)
     res["chat_http"], res["chat_ok"] = st, "NEMOTRON-OK" in (txt or "")
     print(f"chat HTTP {st}: {'OK' if res['chat_ok'] else 'unexpected reply'} ({(txt or out)!s:.80})")
 
@@ -73,6 +95,7 @@ def main():
             "parameters": {"type": "object", "properties": {"path": {"type": "string"},
                            "text": {"type": "string"}}, "required": ["path", "text"]}}}
     st, out = call("/chat/completions", key, {"model": model, "max_tokens": 200, "tools": [tool],
+        "tool_choice": {"type": "function", "function": {"name": "write_file"}},
         "messages": [{"role": "user", "content": "Save the text 'hello' into notes.txt using the tool."}]})
     calls = (out.get("choices") or [{}])[0].get("message", {}).get("tool_calls") if st == 200 else None
     res["tools_http"], res["tool_calling_ok"] = st, bool(calls)

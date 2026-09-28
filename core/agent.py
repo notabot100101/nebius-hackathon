@@ -76,13 +76,40 @@ class NebiusClient:
         return choices[0].get("message", {})
 
     @staticmethod
+    def content_to_text(content: Any) -> str:
+        """Normalize OpenAI-compatible message content into plain text.
+
+        Some providers return message.content as a string; others may return a
+        list of typed content parts. The agent only needs the text portion for
+        summaries and health checks.
+        """
+        if content is None:
+            return ""
+        if isinstance(content, str):
+            return content
+        if isinstance(content, list):
+            parts = []
+            for part in content:
+                if isinstance(part, str):
+                    parts.append(part)
+                elif isinstance(part, dict):
+                    text = part.get("text") or part.get("content")
+                    if isinstance(text, str):
+                        parts.append(text)
+                    elif text is not None:
+                        parts.append(str(text))
+            return "".join(parts)
+        return str(content)
+
+    @staticmethod
     def extract_content(response: Dict[str, Any]) -> str:
         """Get plain text content from a response."""
         msg = NebiusClient.extract_message(response)
         content = msg.get("content")
         if content is None:
             return "(acknowledged)"
-        return content if content else "(empty)"
+        text = NebiusClient.content_to_text(content)
+        return text if text else "(empty)"
 
     @staticmethod
     def extract_tool_calls(response: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -220,7 +247,7 @@ class Agent:
             # Append final assistant message to messages for history
             messages.append({"role": "assistant", "content": final_text})
         else:
-            final_text = msg1.get("content") or "(no content)"
+            final_text = self.client.content_to_text(msg1.get("content")) or "(no content)"
             # Append assistant message to messages for history
             messages.append({"role": "assistant", "content": final_text})
 
