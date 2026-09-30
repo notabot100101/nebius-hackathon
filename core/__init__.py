@@ -1,5 +1,5 @@
 """
-Core module for Proof-First Personal Agent.
+Core module for Trust-First Personal Agent.
 
 Exports:
   - config: dict with API key, model, paths

@@ -1,5 +1,5 @@
 """
-web_search skill – Proof-First Personal Agent.
+web_search skill – Trust-First Personal Agent.
 
 A minimal skill that fetches a URL and returns the text content.
 Uses only stdlib (urllib) to stay dependency-free.

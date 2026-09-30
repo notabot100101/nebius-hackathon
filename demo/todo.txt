@@ -1,9 +1,9 @@
-# Daily Tasks – Proof-First Demo
+# Daily Tasks – Trust-First Demo
 
 ## Work
 - [x] Review Nebius hackathon README
 - [x] Run stack verification (hello_nemotron.py)
-- [ ] Implement proof-first demo task
+- [ ] Implement trust-first demo task
 - [ ] Record demo video for Devpost
 - [ ] Submit project before Oct 30 deadline
 

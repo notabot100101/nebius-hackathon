@@ -1,5 +1,5 @@
 """
-Built-in skills for the Proof-First Personal Agent.
+Built-in skills for the Trust-First Personal Agent.
 
 Skills in this directory are auto-discovered by core.registry.Registry.load_skills_from_directory().
 Use the @skill decorator to expose functions as agent tools.

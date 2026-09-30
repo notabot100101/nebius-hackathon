@@ -3,3 +3,7 @@
 secrets/
 __pycache__/
 phase0-result.json
+workspaces/
+*.pdf
+*.mp4
+*.mov

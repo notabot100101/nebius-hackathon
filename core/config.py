@@ -1,5 +1,5 @@
 """
-Configuration for the Proof-First Personal Agent.
+Configuration for the Trust-First Personal Agent.
 Loads from environment variables and ~/.openclaw/secrets/nebius.env.
 """
 

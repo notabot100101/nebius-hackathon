@@ -101,6 +101,21 @@ def test_safety_blocks_dangerous():
     print("[PASS] test_safety_blocks_dangerous")
 
 
+def test_system_info_skill():
+    """Test the system_info skill if available."""
+    reg = get_registry()
+    if "system_info" not in reg.discover():
+        print("[SKIP] test_system_info_skill: system_info skill not loaded")
+        return
+    handler = reg.get_handler("system_info")
+    result = handler(project_path=".")
+    assert result.success, f"system_info failed: {result.error}"
+    assert "System health" in result.content
+    assert "disk" in result.proof_evidence
+    assert "memory" in result.proof_evidence
+    print("[PASS] test_system_info_skill")
+
+
 def run_all():
     tests = [
         test_registry_decorator,
@@ -110,6 +125,7 @@ def run_all():
         test_web_fetch_skill,
         test_safety_blocks_sudo,
         test_safety_blocks_dangerous,
+        test_system_info_skill,
     ]
     passed = 0
     failed = 0

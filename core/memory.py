@@ -1,5 +1,5 @@
 """
-File-based memory module for the Proof-First Personal Agent.
+File-based memory module for the Trust-First Personal Agent.
 Uses atomic writes (temp file + rename) and timestamped JSON for persistence.
 """
 

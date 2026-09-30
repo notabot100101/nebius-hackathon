@@ -15,7 +15,13 @@ from core.tools import ToolExecutor, ToolResult
 from core.registry import get_registry
 
 
-SYSTEM_PROMPT = """You are a Proof-First Personal Agent. Every claim you make must be backed by evidence.
+# Retry constants (seconds)
+_RETRY_BACKOFF_BASE = 1.5
+_RETRY_MAX_DELAY = 30
+_RETRY_STATUS_CODES = {429, 502, 503, 504}
+
+
+SYSTEM_PROMPT = """You are a Trust-First Personal Agent. Every claim you make must be backed by evidence.
 When you need to interact with the world, use the available tools.
 After using a tool, verify the outcome before telling the user it succeeded.
 Prefer facts over speculation. If you are unsure, say so."""
@@ -30,13 +36,27 @@ class NebiusClient:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
 
+    def _should_retry(self, exc: Optional[Exception]) -> bool:
+        """Determine whether an exception warrants a retry."""
+        if exc is None:
+            return False
+        if isinstance(exc, urllib.error.HTTPError):
+            return exc.code in _RETRY_STATUS_CODES
+        # Treat transient network errors as retryable
+        return isinstance(exc, (urllib.error.URLError, TimeoutError))
+
     def chat(
         self,
         messages: List[Dict[str, str]],
         tools: List[Dict[str, Any]] = None,
         max_tokens: int = 512,
         temperature: float = 0.3,
+        max_retries: int = None,
     ) -> Dict[str, Any]:
+        """Chat completion with automatic retry on transient errors."""
+        if max_retries is None:
+            max_retries = config.get("max_retries", 3)
+
         payload = {
             "model": self.model,
             "messages": messages,
@@ -46,24 +66,42 @@ class NebiusClient:
         if tools:
             payload["tools"] = tools
 
-        req = urllib.request.Request(
-            f"{self.base_url}/chat/completions",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
+        url = f"{self.base_url}/chat/completions"
+        data = json.dumps(payload).encode("utf-8")
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
 
-        try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                return json.loads(resp.read())
-        except urllib.error.HTTPError as e:
-            body = e.read().decode(errors="replace")[:800]
-            return {"error": f"HTTP {e.code}: {body}"}
-        except Exception as e:
-            return {"error": str(e)}
+        for attempt in range(max_retries + 1):
+            req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+            exc = None
+            try:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                    return json.loads(resp.read())
+            except urllib.error.HTTPError as e:
+                exc = e
+                body = e.read().decode(errors="replace")[:800]
+                if not self._should_retry(e):
+                    return {"error": f"HTTP {e.code}: {body}"}
+                # Retryable – continue to backoff below
+            except Exception as e:
+                exc = e
+                if not self._should_retry(e):
+                    return {"error": str(e)}
+                # Retryable – continue to backoff below
+
+            if attempt < max_retries:
+                delay = min(_RETRY_BACKOFF_BASE * (2 ** attempt), _RETRY_MAX_DELAY)
+                time.sleep(delay)
+            else:
+                # Exceeded retries
+                if isinstance(exc, urllib.error.HTTPError):
+                    body = exc.read().decode(errors="replace")[:800]
+                    return {"error": f"HTTP {exc.code} after {max_retries + 1} attempts: {body}"}
+                return {"error": f"{exc} after {max_retries + 1} attempts"}
+        # Unreachable, but keeps type checker happy
+        return {"error": "unexpected end of retry loop"}
 
     @staticmethod
     def extract_message(response: Dict[str, Any]) -> Dict[str, Any]:

@@ -8,7 +8,7 @@ Usage:
 This script runs a single agent turn:
   1. Sends your prompt to the Nemotron model via Nebius Token Factory.
   2. The model may decide to call tools (read_file, list_dir, etc.).
-  3. Each tool call is executed locally and verified (proof-first).
+  3. Each tool call is executed locally and verified (trust-first).
   4. Results are sent back to the model for a final answer.
   5. A JSON summary is written to hello-agent-result.json.
 """

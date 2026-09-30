@@ -1,5 +1,5 @@
 """
-Skill registry for the Proof-First Personal Agent.
+Skill registry for the Trust-First Personal Agent.
 Discovers and registers skill modules from the skills/ directory.
 """
 

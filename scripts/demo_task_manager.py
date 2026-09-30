@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-demo_task_manager.py – Proof-First Daily Task Manager Demo
+demo_task_manager.py – Trust-First Daily Task Manager Demo
 
 Demonstrates the agent reading a todo list, verifying the read,
 calculating statistics with evidence, and writing a verified summary.
@@ -44,7 +44,7 @@ Then read back {summary_path} to verify it was written correctly. Only report su
 def build_summary_text(total, completed, pending, percentage):
     """Deterministic fallback summary used when the model fails to write.
 
-    The demo is proof-first: if the LLM omits the required write_file call, we do
+    The demo is trust-first: if the LLM omits the required write_file call, we do
     not pretend success. We repair with the same verified write_file tool and
     record that repair in the proof chain.
     """
@@ -56,7 +56,7 @@ Pending tasks: {pending}
 Completion percentage: {percentage}%
 
 Top 3 pending priorities:
-1. Implement proof-first demo task
+1. Implement trust-first demo task
 2. Record demo video for Devpost
 3. Submit project before Oct 30 deadline
 
@@ -110,7 +110,7 @@ def main():
     setup_demo_files()
 
     print("=" * 60)
-    print("Proof-First Task Manager Demo")
+    print("Trust-First Task Manager Demo")
     print("=" * 60)
     print(f"Model: {config['model_id']}")
     print(f"Todo:   {TODO_PATH}")

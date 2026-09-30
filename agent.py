@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-agent.py – CLI entry point for the Proof-First Personal Agent.
+agent.py – CLI entry point for the Trust-First Personal Agent.
 
 Usage:
     python agent.py "Your prompt here"          # Single turn
@@ -19,7 +19,7 @@ from core.agent import Agent
 
 
 def run_repl(agent: Agent, extra_system: str = None):
-    print("Proof-First Personal Agent")
+    print("Trust-First Personal Agent")
     print(f"Model: {config['model_id']}")
     print("Type 'exit' or press Ctrl+C to quit.\n")
     while True:
@@ -61,7 +61,7 @@ def run_single(agent: Agent, prompt: str, extra_system: str = None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Proof-First Personal Agent")
+    parser = argparse.ArgumentParser(description="Trust-First Personal Agent")
     parser.add_argument("prompt", nargs="?", help="Single-turn prompt")
     parser.add_argument("--system", default=None, help="Extra system context")
     args = parser.parse_args()

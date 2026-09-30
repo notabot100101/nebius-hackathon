@@ -94,12 +94,13 @@ def main():
     tool = {"type": "function", "function": {"name": "write_file", "description": "Write text to a file",
             "parameters": {"type": "object", "properties": {"path": {"type": "string"},
                            "text": {"type": "string"}}, "required": ["path", "text"]}}}
+    # Note: forced tool_choice is not supported by all Nemotron models;
+    # we test natural tool calling by providing tools and a prompt that needs one.
     st, out = call("/chat/completions", key, {"model": model, "max_tokens": 200, "tools": [tool],
-        "tool_choice": {"type": "function", "function": {"name": "write_file"}},
-        "messages": [{"role": "user", "content": "Save the text 'hello' into notes.txt using the tool."}]})
+        "messages": [{"role": "user", "content": "Use the write_file tool to save the text 'hello' into notes.txt."}]})
     calls = (out.get("choices") or [{}])[0].get("message", {}).get("tool_calls") if st == 200 else None
     res["tools_http"], res["tool_calling_ok"] = st, bool(calls)
-    print(f"tool-calling HTTP {st}: {'OK ' + calls[0]['function']['name'] if calls else 'NOT supported/used'}")
+    print(f"tool-calling HTTP {st}: {'OK ' + calls[0]['function']['name'] if calls else 'NOT used in this sample (may still work in agent mode)'}")
 
     json.dump(res, open("phase0-result.json", "w"), indent=2)
     go = res["chat_ok"] and res["tool_calling_ok"]

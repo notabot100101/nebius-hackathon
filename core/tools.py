@@ -1,5 +1,5 @@
 """
-Tool executor for the Proof-First Personal Agent.
+Tool executor for the Trust-First Personal Agent.
 Executes tool calls from the model and verifies results.
 """
 

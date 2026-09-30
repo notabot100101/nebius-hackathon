@@ -1,4 +1,4 @@
-# Proof-First Personal Agent – Architecture
+# Trust-First Personal Agent – Architecture
 
 > Design doc for the Nebius × NVIDIA Global AI Hackathon (Personal AI track).
 

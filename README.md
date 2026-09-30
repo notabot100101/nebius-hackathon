@@ -1,4 +1,4 @@
-# Proof-First Personal Agent
+# Trust-First Personal Agent
 
 > Built for the **Nebius × NVIDIA Global AI Hackathon** (Personal AI track).  
 > Deadline: Oct 30 2026 · [Devpost page](https://nebius-x-nvidia-global-ai-hackathon.devpost.com/)

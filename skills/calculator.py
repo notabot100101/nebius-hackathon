@@ -1,5 +1,5 @@
 """
-calculator skill – Proof-First Personal Agent.
+calculator skill – Trust-First Personal Agent.
 
 A safe math evaluation skill that only allows basic arithmetic.
 No eval() of arbitrary strings – only a whitelist of safe operations.
