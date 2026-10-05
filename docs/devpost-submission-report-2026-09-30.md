@@ -2,7 +2,7 @@
 
 **Status:** BLOCKED — Login required before submission can proceed
 **Hackathon:** Nebius × NVIDIA Global AI Hackathon
-**Devpost Account:** Paul Claw (paul-pawprints) / paul.pawprints@gmail.com
+**Devpost Account:** (redacted - see ops notes)
 
 ---
 
@@ -15,7 +15,7 @@
 
 ### 2. Attempted Google OAuth Login
 - Clicked "Log in with Google" on Devpost
-- Google showed the account chooser (Paul Claw / paul.pawprints@gmail.com visible)
+- Google showed the account chooser
 - **BLOCKED:** After selecting the account, Google rejected the sign-in with:
   > "This browser or app may not be secure."
 - This is a known anti-automation measure for CDP-driven browsers
