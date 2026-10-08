@@ -13,12 +13,11 @@ after every action it checks that the world actually changed (file written, comm
 ## Live demo (30 seconds)
 
 ```bash
-# One command, one proof
-python3 scripts/hello-agent.py \
-  "Read demo/todo.txt, count done vs pending tasks, compute completion %, and write a briefing to demo/summary.md"
+# One command, one proof chain
+python3 scripts/demo_task_manager.py
 ```
 
-The agent will read the file, calculate 30.0 % completion, write the summary, read it back to verify the bytes match, store the proof, and report the result — all with full JSON trace.
+The demo reads the todo file, calculates 30.0 % completion, writes a summary through the verified tool path, checks the summary file exists and contains the expected fields, stores the proof, and reports the result — all with full JSON trace.
 
 ## Quick start
 
@@ -64,7 +63,8 @@ Successful claims are stored before the user ever sees the answer.
 ```bash
 python3 tests/test_memory.py   # 7 tests
 python3 tests/test_tools.py    # 10 tests
-python3 tests/test_agent.py    # 3 tests
+python3 tests/test_agent.py    # 4 tests
+python3 tests/test_skills.py   # 8 tests
 ```
 
 ## Project structure

@@ -40,10 +40,10 @@ Personal AI agents are getting smarter — but they still lie, hallucinate facts
 Run the 30-second demo:
 
 ```bash
-python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending, compute completion %, and write a briefing to demo/summary.md"
+python3 scripts/demo_task_manager.py
 ```
 
-The agent reads 10 tasks (3 done, 7 pending), calculates `30.0%`, writes `demo/summary.md`, reads it back to verify the bytes match, and stores the proof chain in `hello-agent-result.json`. You can inspect every claim.
+The demo reads 10 tasks (3 done, 7 pending), calculates `30.0%`, writes `demo/summary.md`, verifies the summary file, and stores the proof chain in `demo-task-manager-result.json`. You can inspect every claim.
 
 ## What's Next
 

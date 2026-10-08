@@ -15,9 +15,9 @@
   - Text editor or VS Code: `docs/architecture.md` open for stack slide
 - [ ] **Nebius API key** exported or in `~/.openclaw/secrets/nebius.env`.
 - [ ] **Quick smoke test:** run `python3 scripts/hello_nemotron.py` — should pass in <5 seconds.
-- [ ] **Practice the one-liner twice** until it is muscle memory:
+- [ ] **Practice the demo command twice** until it is muscle memory:
   ```bash
-  python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending tasks, compute completion percent, and write a briefing to demo/summary.md"
+  python3 scripts/demo_task_manager.py
   ```
 
 ---
@@ -35,12 +35,12 @@
 - [ ] Pause after *"delegating."* Let the problem land.
 
 ### Scene 3 — Demo Walkthrough (0:45–2:00)
-- [ ] **Type the one-liner live** (do not paste — typing = authenticity).
+- [ ] **Type the demo command live** (do not paste — typing = authenticity).
 - [ ] Narrate the three tool calls as they appear:
   - `read_file` → 10 tasks, 3 done, 7 pending
   - `calculate` → 30.0%
-  - `write_file` → then read-back verification
-- [ ] **Point at the byte-match line** specifically (`Expected 271 bytes, actual 271 bytes, match confirmed`).
+  - `write_file` verified repair if the model omits the write call
+- [ ] **Point at the verification lines** specifically (`write_file verified`, plus external checks for heading/total/pending/percentage).
 - [ ] Keep eyes on terminal; don't narrate every line.
 
 ### Scene 4 — Inspect the Proof (1:40–2:00)
@@ -70,7 +70,7 @@ Capture these as separate clips so you can splice them in:
 - [ ] **Wide shot of you + screen** for opening hook and closing line.
 - [ ] **Text overlay** at end:
   ```
-  GitHub: github.com/ultramarine963/nebius-hackathon
+  GitHub: github.com/notabot100101/nebius-hackathon
   Devpost: nebius-x-nvidia-global-ai-hackathon.devpost.com
   ```
 
@@ -91,7 +91,7 @@ Capture these as separate clips so you can splice them in:
 ```
 HOOK     (0:00)  "What if your AI assistant couldn't fib?"
 PROBLEM  (0:20)  Agents lie. You double-check everything.
-DEMO     (0:45)  Type the one-liner. Point at byte-match.
+DEMO     (0:45)  Type the demo command. Point at verification.
 PROOF    (1:40)  Show hello-agent-result.json
 REVEAL   (2:00)  "I proved I did it." ← money line
 CLOSE    (2:30)  Tagline + smile + hold 2 sec

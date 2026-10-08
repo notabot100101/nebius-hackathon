@@ -9,8 +9,8 @@ Target length: ~2:40. Speak at natural pace — ~130–150 words per minute.
 
 - **Visual:** Split-screen. Presenter on left (~30%). Terminal fullscreen on right (~70%).
 - **Terminal font:** Large (18–20pt), high contrast, no terminal transparency.
-- **Have ready:** `demo/todo.txt` and `hello-agent-result.json` open in adjacent tabs.
-- **Practice the one-liner twice** before recording. It must be fluid.
+- **Have ready:** `demo/todo.txt` and `demo-task-manager-result.json` open in adjacent tabs.
+- **Practice the demo command twice** before recording. It must be fluid.
 
 ---
 
@@ -38,12 +38,12 @@ Target length: ~2:40. Speak at natural pace — ~130–150 words per minute.
 
 ## Demo Walkthrough (0:45 – 2:00)
 
-**Step 1 — One command, one proof.**
+**Step 1 — One command, one proof chain.**
 
 *(Type into terminal — practice this line until muscle memory)*
 
 ```bash
-python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending tasks, compute completion percent, and write a briefing to demo/summary.md"
+python3 scripts/demo_task_manager.py
 ```
 
 > "The prompt goes to NVIDIA Nemotron, served through Nebius Token Factory. The model decides which tools to call: `read_file`, `calculate`, `write_file`."
@@ -52,15 +52,15 @@ python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending tasks,
 
 > "First, `read_file` on `demo/todo.txt`. The agent counts 10 total tasks: 3 done, 7 pending. Then `calculate` runs `(3 / 10) * 100` — result: `30.0%`."
 >
-> "Then `write_file` creates `demo/summary.md`. But here's the twist: after writing, the agent immediately runs `read_file` on the same path and compares bytes. Expected 271 bytes, actual 271 bytes, match confirmed. Only then does it say success."
+> "Then `demo/summary.md` is created through the verified write path. If the model omits a required write call, the demo does not pretend success — it performs a deterministic verified repair and records that repair in the proof chain. Only verified work counts."
 
 **Step 3 — Inspect the proof chain.**
 
-*(Switch to `hello-agent-result.json` — zoom in so JSON is readable)*
+*(Switch to `demo-task-manager-result.json` — zoom in so JSON is readable)*
 
 > "Every step is logged: tool name, claim, evidence — exact bytes, return codes, expressions. You own the proof. It's plain JSON you can read, audit, or version-control."
 
-**Presenter note:** Keep eyes on terminal during demo. Don't narrate every line — highlight the *verification* moments. Point at the byte-match line specifically.
+**Presenter note:** Keep eyes on terminal during demo. Don't narrate every line — highlight the *verification* moments. Point at the `write_file verified` and external verification lines specifically.
 
 ---
 

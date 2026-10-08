@@ -1,6 +1,10 @@
 # Devpost Submission Report — 2026-09-30
 
-**Status:** BLOCKED — Login required before submission can proceed
+**Status:** SUPERSEDED BY 2026-10-08 READINESS SWEEP — see `docs/submission-readiness-2026-10-08.md`.
+
+2026-10-08 update: the GitHub repo now exists and is public at `https://github.com/notabot100101/nebius-hackathon`. Devpost login, demo video upload, and final submit still require Paul's explicit approval.
+
+Original 2026-09-30 status: BLOCKED — Login required before submission can proceed
 **Hackathon:** Nebius × NVIDIA Global AI Hackathon
 **Devpost Account:** (redacted - see ops notes)
 
@@ -46,7 +50,7 @@
 
 | # | Blocker | Status |
 |---|---------|--------|
-| 1 | **No GitHub remote** — repo is local only | STILL ACTIVE |
+| 1 | **GitHub repo** — public at `https://github.com/notabot100101/nebius-hackathon` as of 2026-10-08 | RESOLVED |
 | 2 | **No demo video** — not yet recorded | STILL ACTIVE |
 | 3 | **Devpost login** — browser automation blocked by Google/GitHub security | CONFIRMED — Paul must log in manually |
 | 4 | **Cloudflare on Nebius console** — credit redemption requires manual login | STILL ACTIVE |
@@ -97,7 +101,7 @@ Trust-First Personal Agent flips the script: *every action is checked before you
 **Try It in 30 Seconds**
 
 ```bash
-python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending, compute completion %, and write a briefing to demo/summary.md"
+python3 scripts/demo_task_manager.py
 ```
 
 The agent reads 10 tasks (3 done, 7 pending), calculates 30.0%, writes `demo/summary.md`, reads it back to verify the bytes match, and stores the proof chain in `hello-agent-result.json`. You can inspect every claim.
@@ -121,7 +125,7 @@ The agent reads 10 tasks (3 done, 7 pending), calculates 30.0%, writes `demo/sum
 License: Apache-2.0
 
 ### Try It Out / Links
-- GitHub repo: *(paste your public repo URL here once published)*
+- GitHub repo: https://github.com/notabot100101/nebius-hackathon
 - Demo video: *(paste your YouTube/Vimeo link here once recorded)*
 
 ### Platform Feedback — REQUIRED

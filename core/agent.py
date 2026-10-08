@@ -224,7 +224,7 @@ class Agent:
         self.history = []
         self.turn_count = 0
 
-    def run_turn(self, user_input: str, extra_system: str = None) -> AgentTurnResult:
+    def run_turn(self, user_input: str, extra_system: str = None, max_tool_rounds: int = 8) -> AgentTurnResult:
         """Run one complete agent turn with persistent history."""
         self.turn_count += 1
 
@@ -238,20 +238,24 @@ class Agent:
         messages.append({"role": "user", "content": user_input})
 
         # Initial model call
-        response1 = self.client.chat(
+        response = self.client.chat(
             messages=messages,
             tools=self.tools.schemas(),
             max_tokens=512,
         )
 
-        msg1 = self.client.extract_message(response1)
-        tool_calls = self.client.extract_tool_calls(response1)
+        msg = self.client.extract_message(response)
+        tool_calls = self.client.extract_tool_calls(response)
+        all_tool_calls: List[Dict[str, Any]] = []
         proof_log: List[Dict[str, Any]] = []
         tool_results: List[ToolResult] = []
 
-        if tool_calls:
+        rounds = 0
+        while tool_calls and rounds < max_tool_rounds:
+            rounds += 1
+            all_tool_calls.extend(tool_calls)
             # Append assistant message with tool_calls
-            messages.append(msg1)
+            messages.append(msg)
 
             for tc in tool_calls:
                 result = self.tools.execute(tc)
@@ -275,19 +279,52 @@ class Agent:
                     "content": json.dumps(result.to_dict()),
                 })
 
-            # Final model call with tool results
-            response2 = self.client.chat(
+            # Continue the same turn. Some models emit one tool call at a time,
+            # so keep looping until the model returns a final text answer.
+            response = self.client.chat(
                 messages=messages,
                 tools=self.tools.schemas(),
                 max_tokens=512,
             )
-            final_text = self.client.extract_content(response2)
-            # Append final assistant message to messages for history
-            messages.append({"role": "assistant", "content": final_text})
+            msg = self.client.extract_message(response)
+            tool_calls = self.client.extract_tool_calls(response)
+
+        if tool_calls:
+            final_text = f"Stopped after {max_tool_rounds} tool rounds without a final answer."
         else:
-            final_text = self.client.content_to_text(msg1.get("content")) or "(no content)"
-            # Append assistant message to messages for history
-            messages.append({"role": "assistant", "content": final_text})
+            final_text = self.client.content_to_text(msg.get("content")) or "(no content)"
+            if all_tool_calls and final_text in ("", "(no content)", "(empty)", "(acknowledged)"):
+                # Some tool-capable models occasionally return an empty message
+                # after receiving tool results. Ask once for a text-only summary
+                # grounded only in the verified evidence we already have.
+                summary_messages = list(messages)
+                summary_messages.append({
+                    "role": "user",
+                    "content": (
+                        "The previous assistant response was empty. Using only the "
+                        "verified tool results in this turn, answer the original user request. "
+                        "Do not claim that any requested action happened unless a tool result proves it. "
+                        "If part of the request remains undone, state that clearly."
+                    ),
+                })
+                response = self.client.chat(messages=summary_messages, tools=None, max_tokens=512)
+                fallback_text = self.client.extract_content(response)
+                if (
+                    fallback_text not in ("", "(no content)", "(empty)", "(acknowledged)")
+                    and "<tool_call" not in fallback_text
+                    and "<function=" not in fallback_text
+                ):
+                    final_text = fallback_text
+                else:
+                    verified = "; ".join(
+                        entry["claim"] for entry in proof_log if entry.get("success") and entry.get("claim")
+                    ) or "tool execution completed"
+                    final_text = (
+                        f"Verified: {verified}. The model did not provide a grounded final answer; "
+                        "any requested action not listed here remains undone."
+                    )
+        # Append final assistant message to messages for history
+        messages.append({"role": "assistant", "content": final_text})
 
         # Update persistent history (exclude system message)
         self.history = messages[1:]
@@ -295,7 +332,7 @@ class Agent:
         return AgentTurnResult(
             user_input=user_input,
             assistant_text=final_text,
-            tool_calls=tool_calls,
+            tool_calls=all_tool_calls,
             tool_results=tool_results,
             proof_log=proof_log,
             raw_messages=messages,

@@ -29,7 +29,7 @@ A spoken demo script for a 2–3 minute video.
 *(Type into terminal)*
 
 ```bash
-python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending tasks, compute completion percent, and write a briefing to demo/summary.md"
+python3 scripts/demo_task_manager.py
 ```
 
 "The prompt goes to NVIDIA Nemotron, served through Nebius Token Factory. The model decides which tools to call — `read_file`, `calculate`, `write_file`."
@@ -40,7 +40,7 @@ python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending tasks,
 
 **Step 3 — Write and verify.**
 
-"Then `write_file` creates `demo/summary.md`. But here's the twist: after writing, the agent immediately runs `read_file` on the same path and compares bytes. Expected 271 bytes, actual 271 bytes, match confirmed. Only then does it say success."
+"Then `demo/summary.md` is created through the verified write path. If the model omits a required write call, the demo does not pretend success — it performs a deterministic verified repair and records that repair in the proof chain. Only verified work counts."
 
 **Step 4 — Inspect the proof.**
 

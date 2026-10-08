@@ -54,10 +54,10 @@ Personal AI agents are getting smarter — but they still lie, hallucinate facts
 ### Try It in 30 Seconds
 
 ```bash
-python3 scripts/hello-agent.py "Read demo/todo.txt, count done vs pending, compute completion %, and write a briefing to demo/summary.md"
+python3 scripts/demo_task_manager.py
 ```
 
-The agent reads 10 tasks (3 done, 7 pending), calculates 30.0%, writes `demo/summary.md`, reads it back to verify the bytes match, and stores the proof chain in `hello-agent-result.json`. You can inspect every claim.
+The demo reads 10 tasks (3 done, 7 pending), uses the calculate tool for 30.0%, writes `demo/summary.md`, verifies the summary exists and contains the expected briefing fields, and stores the proof chain in `demo-task-manager-result.json`. You can inspect every claim.
 
 ### What's Next
 
@@ -85,13 +85,13 @@ License: Apache-2.0
 
 ## Devpost Field: Try It Out / Links
 
-- GitHub repo: *(paste your public repo URL here once published)*
+- GitHub repo: https://github.com/notabot100101/nebius-hackathon
 - Demo video: *(paste your YouTube/Vimeo link here once recorded)*
 
 > ⚠️ **To do before submission:**
-> 1. Push this repo to GitHub and make it public.
-> 2. Record the 2–3 min demo video.
-> 3. Upload the video to YouTube (unlisted or public) and paste the link here.
+> 1. Record the 2–3 min demo video.
+> 2. Upload the video to YouTube (unlisted or public) and paste the link here.
+> 3. Paste the final video link into Devpost and submit after Paul's final approval.
 
 ---
 
@@ -135,7 +135,7 @@ License: Apache-2.0
 | Tagline | `An always-on personal assistant that refuses to claim success until it can prove the world actually changed.` ✅ Ready |
 | About / Story | Sections above (Problem → How It Works → Architecture → Demo → What's Next) ✅ Ready |
 | Built With | Nebius Token Factory, NVIDIA Nemotron, Python stdlib, OpenClaw ✅ Ready |
-| Try It Out / Links | GitHub repo + demo video ⚠️ Needs Paul to create/upload |
+| Try It Out / Links | GitHub repo ✅ ready; demo video ⚠️ needs Paul to record/upload |
 | Platform Feedback | Sections above (What Worked + What Could Improve) ✅ Ready |
 | Video | 2–3 min demo ⚠️ Needs recording |
 
