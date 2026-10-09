@@ -1,7 +1,7 @@
 # Trust-First Personal Agent
 
 > Built for the **Nebius × NVIDIA Global AI Hackathon** (Personal AI track).  
-> Deadline: Oct 30 2026 · [Devpost page](https://nebius-x-nvidia-global-ai-hackathon.devpost.com/)
+> Deadline: Oct 30 2026 · [Devpost page](https://nebiusglobalaihackathon.devpost.com/)
 
 An always-on personal assistant whose defining feature is that it **verifies its own work**:
 after every action it checks that the world actually changed (file written, command succeeded, expected output present) and refuses to report success it cannot prove.
